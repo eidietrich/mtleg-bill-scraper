@@ -12,34 +12,34 @@ class Montana(State):
         "bills": MTBillScraper,
     }
     legislative_sessions = [
-        {
-            "_scraped_name": "20111",
-            "identifier": "2011",
-            "name": "2011 Regular Session",
-            "start_date": "2011-01-03",
-            "end_date": "2011-04-28",
-        },
-        {
-            "_scraped_name": "20131",
-            "identifier": "2013",
-            "name": "2013 Regular Session",
-            "start_date": "2013-01-07",
-            "end_date": "2013-04-27",
-        },
-        {
-            "_scraped_name": "20151",
-            "identifier": "2015",
-            "name": "2015 Regular Session",
-            "start_date": "2015-01-05",
-            "end_date": "2015-04-28",
-        },
-        {
-            "_scraped_name": "20171",
-            "identifier": "2017",
-            "name": "2017 Regular Session",
-            "start_date": "2017-01-02",
-            "end_date": "2017-04-28",
-        },
+        # {
+        #     "_scraped_name": "20111",
+        #     "identifier": "2011",
+        #     "name": "2011 Regular Session",
+        #     "start_date": "2011-01-03",
+        #     "end_date": "2011-04-28",
+        # },
+        # {
+        #     "_scraped_name": "20131",
+        #     "identifier": "2013",
+        #     "name": "2013 Regular Session",
+        #     "start_date": "2013-01-07",
+        #     "end_date": "2013-04-27",
+        # },
+        # {
+        #     "_scraped_name": "20151",
+        #     "identifier": "2015",
+        #     "name": "2015 Regular Session",
+        #     "start_date": "2015-01-05",
+        #     "end_date": "2015-04-28",
+        # },
+        # {
+        #     "_scraped_name": "20171",
+        #     "identifier": "2017",
+        #     "name": "2017 Regular Session",
+        #     "start_date": "2017-01-02",
+        #     "end_date": "2017-04-28",
+        # },
         {
             "_scraped_name": "20191",
             "identifier": "2019",
@@ -57,8 +57,15 @@ class Montana(State):
         # },
     ]
     ignored_scraped_sessions = [
-        "20211",
-        "20172",
+        "20211", # 2021
+
+        "20171", # Available, commented out above
+        "20151",
+        "20131",
+        "20131",
+        "20111",
+
+        "20172", # 2017 special
         "20091",
         "20072",
         "20071",

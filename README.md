@@ -1,10 +1,16 @@
-# Open States Scrapers
+# Open States scrapers, adapted for Montana
 
-This repository contains the code responsible for scraping bills & votes for Open States.
+Adapted from https://github.com/openstates/openstates-scrapers.
 
-## Links
+## Commands
 
-* [Contributor's Guide](https://docs.openstates.org/en/latest/contributing/getting-started.html)
-* [Documentation](https://docs.openstates.org/en/latest/contributing/scrapers.html)
-* [Open States Discourse](https://discourse.openstates.org)
-* [Code of Conduct](https://docs.openstates.org/en/latest/contributing/code-of-conduct.html)
+This assumes Docker is installed and running. See the OpenStates [getting started guide](https://docs.openstates.org/en/latest/contributing/getting-started.html).
+
+### Full scrape
+```npm run scrape```
+or
+```docker-compose run --rm scrape mt bills --scrape```
+
+Writes to `_cache` and `_data` folders (left untracked by version control). 
+
+### Single bill scrape
