@@ -179,6 +179,11 @@ class MTBillScraper(Scraper, LXMLMixin):
 
         return dict(tabledata)
 
+    def _get_bill_status(self, status_page):
+        """MTFP custom function to pull in bill status indicator"""
+        status_text = status_page.xpath("//strong[text()='Current Bill Progress: ']/../text()")[0]
+        return status_text.strip()
+
     def parse_bill_status_page(self, url, page, session):
         # see 2007 HB 2... weird.
         parsed_url = urllib.parse.urlparse(url)
@@ -227,11 +232,16 @@ class MTBillScraper(Scraper, LXMLMixin):
             primary=True,
         )
 
+        # Pull in bill status
+        bill_status = self._get_bill_status(page)
+        bill.extras['bill_status'] = bill_status
+
         # A various plus fields MT provides.
         plus_fields = [
             "requester",
             ("chapter number:", "chapter"),
             "transmittal date:",
+            "return (with 2nd house amendments) date:",
             "drafter",
             "fiscal note probable:",
             "bill draft number:",
@@ -258,17 +268,30 @@ class MTBillScraper(Scraper, LXMLMixin):
             bill.extras[key] = val
 
         # Add bill subjects.
+        # Modified to suit MTFP needs (e.g. flagging bills that require more than a simple majority to pass)
         xp = '//th[contains(., "Revenue/Approp.")]/ancestor::table/tr'
         subjects = []
+        extra_subjects = []
         for tr in page.xpath(xp):
             try:
-                subj = tr.xpath("td")[0].text_content()
+                subj = tr.xpath("td")[0].text_content().strip()
+                revenue_or_approps = tr.xpath("td")[1].text_content().strip()
+                vote_req = tr.xpath("td")[2].text_content().strip()
+                subj_code = tr.xpath("td")[3].text_content().strip()
             except IndexError:
                 continue
             subjects.append(subj)
+            extra_subjects.append({
+                'subject': subj,
+                'subject_code': subj_code,
+                'revenue_or_approps': revenue_or_approps,
+                'vote_requirement': vote_req
+            })
 
         for s in subjects:
             bill.add_subject(s)
+
+        bill.extras['extra_subjects'] = extra_subjects
 
         self.add_fiscal_notes(page, bill)
 
@@ -304,6 +327,33 @@ class MTBillScraper(Scraper, LXMLMixin):
 
             if "by senate" in action_name.lower():
                 actor = "upper"
+
+            # MTFP extras --> 
+            
+            # Hacky way to gather extra bill data w/out tweaking openstates data model
+            # plan is to break description apart into an array in later processing/cleaning script
+            # committee name in last column
+            committee = action.xpath("td[5]")[0].text
+            if not committee:
+                # Some committee names are inside links
+                committee = action.xpath("td[5]/a")[0].text
+            if (committee):
+                action_name += ('|' + committee.strip().replace("&nbsp", ""))
+            else:
+                action_name += '|'
+            
+            # Url of vote page to allow reliable merge between bill actions and votes
+            vote_url = action.xpath("td[3]/a/@href")
+            if (len(vote_url) > 0):
+                action_name += ('|' + vote_url[0])
+            else:
+                action_name += '|'
+
+            # URL of meeting video
+            hearing_links = action.xpath("td[5]/a") # All links in committee/audio column. First is committee page for committee hearings.
+            if (len(hearing_links) > 0):
+                hearing_urls = [ a.xpath('@href')[0] for a in hearing_links]
+                action_name += ('|' + '|'.join(hearing_urls))
 
             bill.add_action(
                 action_name, action_date, classification=action_type, chamber=actor
