@@ -40,24 +40,25 @@ class Montana(State):
         #     "start_date": "2017-01-02",
         #     "end_date": "2017-04-28",
         # },
-        {
-            "_scraped_name": "20191",
-            "identifier": "2019",
-            "name": "2019 Regular Session",
-            "start_date": "2019-01-07",
-            "end_date": "2019-04-25",
-        },
-        # TODO: Restore when they turn some LC's into bills
         # {
-        #     "_scraped_name": "20211",
-        #     "identifier": "2021",
-        #     "name": "2021 Regular Session",
-        #     "start_date": "2021-01-04",
-        #     "end_date": "2021-04-25",
+        #     "_scraped_name": "20191",
+        #     "identifier": "2019",
+        #     "name": "2019 Regular Session",
+        #     "start_date": "2019-01-07",
+        #     "end_date": "2019-04-25",
         # },
+        # TODO: Restore when they turn some LC's into bills
+        {
+            "_scraped_name": "20211",
+            "identifier": "2021",
+            "name": "2021 Regular Session",
+            "start_date": "2021-01-04",
+            "end_date": "2021-04-25",
+        },
     ]
     ignored_scraped_sessions = [
-        "20211", # 2021
+        # "20211", # 2021 session
+        "20191", # 2019 session
 
         "20171", # Available, commented out above
         "20151",
