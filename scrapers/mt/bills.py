@@ -133,7 +133,7 @@ class MTBillScraper(Scraper, LXMLMixin):
         bill = None
         doc = self.lxmlize(bill_url)
 
-        bill, votes = self.parse_bill_status_page(bill_url, doc, session)
+        bill, votes = self.parse_bill_status_page(bill_url, doc, list_sponsor, session)
 
         # Get versions on the detail page.
         versions = [
@@ -206,7 +206,7 @@ class MTBillScraper(Scraper, LXMLMixin):
         status_text = status_page.xpath("//strong[text()='Current Bill Progress: ']/../text()")[0]
         return status_text.strip()
 
-    def parse_bill_status_page(self, url, page, session):
+    def parse_bill_status_page(self, url, page, list_sponsor, session):
         # see 2007 HB 2... weird.
         parsed_url = urllib.parse.urlparse(url)
         parsed_query = dict(urllib.parse.parse_qsl(parsed_url.query))
