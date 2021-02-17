@@ -10,44 +10,6 @@ class Montana(State):
         "bills": MTBillScraper,
     }
     legislative_sessions = [
-<<<<<<< HEAD
-        # {
-        #     "_scraped_name": "20111",
-        #     "identifier": "2011",
-        #     "name": "2011 Regular Session",
-        #     "start_date": "2011-01-03",
-        #     "end_date": "2011-04-28",
-        # },
-        # {
-        #     "_scraped_name": "20131",
-        #     "identifier": "2013",
-        #     "name": "2013 Regular Session",
-        #     "start_date": "2013-01-07",
-        #     "end_date": "2013-04-27",
-        # },
-        # {
-        #     "_scraped_name": "20151",
-        #     "identifier": "2015",
-        #     "name": "2015 Regular Session",
-        #     "start_date": "2015-01-05",
-        #     "end_date": "2015-04-28",
-        # },
-        # {
-        #     "_scraped_name": "20171",
-        #     "identifier": "2017",
-        #     "name": "2017 Regular Session",
-        #     "start_date": "2017-01-02",
-        #     "end_date": "2017-04-28",
-        # },
-        # {
-        #     "_scraped_name": "20191",
-        #     "identifier": "2019",
-        #     "name": "2019 Regular Session",
-        #     "start_date": "2019-01-07",
-        #     "end_date": "2019-04-25",
-        # },
-        # TODO: Restore when they turn some LC's into bills
-=======
         {
             "_scraped_name": "20111",
             "identifier": "2011",
@@ -83,7 +45,6 @@ class Montana(State):
             "start_date": "2019-01-07",
             "end_date": "2019-04-25",
         },
->>>>>>> f7759a3fe031ca16b52a1a9e82654b7ec0f12d9c
         {
             "_scraped_name": "20211",
             "identifier": "2021",
@@ -93,20 +54,7 @@ class Montana(State):
         },
     ]
     ignored_scraped_sessions = [
-<<<<<<< HEAD
-        # "20211", # 2021 session
-        "20191", # 2019 session
-
-        "20171", # Available, commented out above
-        "20151",
-        "20131",
-        "20131",
-        "20111",
-
-        "20172", # 2017 special
-=======
         "20172",
->>>>>>> f7759a3fe031ca16b52a1a9e82654b7ec0f12d9c
         "20091",
         "20072",
         "20071",

@@ -133,7 +133,7 @@ class MTBillScraper(Scraper, LXMLMixin):
         bill = None
         doc = self.lxmlize(bill_url)
 
-        bill, votes = self.parse_bill_status_page(bill_url, doc, list_sponsor, session)
+        bill, votes = self.parse_bill_status_page(bill_url, doc, session)
 
         # Get versions on the detail page.
         versions = [
