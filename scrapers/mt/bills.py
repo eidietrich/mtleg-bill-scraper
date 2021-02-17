@@ -113,10 +113,10 @@ class MTBillScraper(Scraper, LXMLMixin):
                 "SB" in bill_url or "SJ" in bill_url or "SR" in bill_url
             ):
                 bills.append({"url": bill_url, "sponsor": sponsor})
-            if "LC" in bill_url and "BILL_NO" not in bill_url:
-                # this is a bill proposal, not an actual bill, aka "unintroduced" bill
-                # unintroduced bills don't exactly have a chamber, but we'll use sponsor's chamber to assign one
-                bills.append({"url": bill_url, "sponsor": sponsor})
+            # if "LC" in bill_url and "BILL_NO" not in bill_url:
+            #     # this is a bill proposal, not an actual bill, aka "unintroduced" bill
+            #     # unintroduced bills don't exactly have a chamber, but we'll use sponsor's chamber to assign one
+            #     bills.append({"url": bill_url, "sponsor": sponsor})
 
         for bill_info in bills:
             bill, votes = self.parse_bill(
@@ -206,7 +206,7 @@ class MTBillScraper(Scraper, LXMLMixin):
         status_text = status_page.xpath("//strong[text()='Current Bill Progress: ']/../text()")[0]
         return status_text.strip()
 
-    def parse_bill_status_page(self, url, page, session):
+    def parse_bill_status_page(self, url, page, list_sponsor, session):
         # see 2007 HB 2... weird.
         parsed_url = urllib.parse.urlparse(url)
         parsed_query = dict(urllib.parse.parse_qsl(parsed_url.query))
