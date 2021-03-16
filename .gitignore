@@ -3,6 +3,8 @@ data
 cache
 _cache
 _data
+_cached_votes
+_cached_votes copy
 
 # Setting-overrides that should not be shared
 local_settings.*py
@@ -43,3 +45,6 @@ tmp.*
 pubinfo_*/
 billydata
 .idea
+
+# js
+package-lock.json
