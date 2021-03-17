@@ -11,6 +11,13 @@ class Montana(State):
     }
     legislative_sessions = [
         # {
+        #     "_scraped_name": "20051",
+        #     "identifier": "2005",
+        #     "name": "2005 Regular Session",
+        #     "start_date": "2005-01-03",
+        #     "end_date": "2011-04-26",
+        # },
+        # {
         #     "_scraped_name": "20111",
         #     "identifier": "2011",
         #     "name": "2011 Regular Session",
@@ -60,7 +67,6 @@ class Montana(State):
 
         "20171", # Available, commented out above
         "20151",
-        "20131",
         "20131",
         "20111",
 
