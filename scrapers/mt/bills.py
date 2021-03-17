@@ -2,6 +2,9 @@ import os
 import re
 import itertools
 import copy
+import glob
+import json
+import shutil
 import tempfile
 import urllib
 from datetime import datetime
@@ -71,6 +74,20 @@ class MTBillScraper(Scraper, LXMLMixin):
             "P_ENTY_ID_SEQ="
         )
 
+        self.cached_vote_urls_to_ids = {}
+
+        # for caching of vote events, which are assumed to be static once uploaded (unlike bills)
+        # the `vote_url` key is used to skip the request/parsing for a vote that's already been cached
+        # the `_id` value is used to move the cached json file into `_data/mt` - the `_id` is in the json filename
+        # any files leftover in `_cached_votes` are deleted at the end of the scrape, as they weren't asked for this run
+        for name in glob.glob('./_cached_votes/*'):
+            vote_json = json.loads(open(name).read())
+            self.cached_vote_urls_to_ids[vote_json['pupa_id']] = vote_json['_id']
+
+        # set once here to avoid calling .keys() thousands of times
+        # be careful about this in the future if the cache dict is ever modified outside of __init__
+        self.cached_vote_urls = list(self.cached_vote_urls_to_ids.keys())
+
     def scrape(self, chamber=None, session=None):
         # set default parameters
         if not session:
@@ -127,6 +144,25 @@ class MTBillScraper(Scraper, LXMLMixin):
                 if vote.pupa_id not in self._seen_vote_ids:
                     self._seen_vote_ids.add(vote.pupa_id)
                     yield vote
+
+        # delete the _cached_votes dir and anything left in it,
+        # whatever is left in the cache was not requested during this scrape
+        leftover_cached_votes = glob.glob('./_cached_votes/*')
+
+        delete_counter = 0
+        for f in leftover_cached_votes:
+            try:
+                os.remove(f)
+                delete_counter += 1
+            except OSError as e:
+                print("Error deleting leftover cached votes: %s : %s" % (f, e.strerror))
+        self.logger.info("Deleted " + str(delete_counter) + " leftover cached vote events")
+
+        cached_votes_dir = './_cached_votes'
+        try:
+            os.rmdir(cached_votes_dir)
+        except OSError as e:
+            print("Error deleting _cached_votes dir: %s : %s" % (cached_votes_dir, e.strerror))
 
     def parse_bill(self, bill_url, list_sponsor, session):
         # list_sponsor passed to support proposed bills (aka "unintroduced") which have "LC XXXX" bill numbers
@@ -517,23 +553,28 @@ class MTBillScraper(Scraper, LXMLMixin):
                 vote_url = tds[2].xpath("a/@href")
 
                 if vote_url:
+                    if any(vote_url[0] in s for s in self.cached_vote_urls):
+                        # Move cached vote event to /_data/mt
+                        cached_vote = "./_cached_votes/vote_event_" + self.cached_vote_urls_to_ids[vote_url[0]] + ".json"
+                        shutil.move(cached_vote, './_data/mt/')
+                        self.logger.info("Moved vote event from cache " + cached_vote)
+                    else:
+                        # Get the matching vote object.
+                        text = tr.itertext()
+                        action = next(text).strip()
+                        chamber, action = action.split(" ", 1)
+                        date = datetime.strptime(next(text), "%m/%d/%Y").date()
+                        vote_url = vote_url[0]
 
-                    # Get the matching vote object.
-                    text = tr.itertext()
-                    action = next(text).strip()
-                    chamber, action = action.split(" ", 1)
-                    date = datetime.strptime(next(text), "%m/%d/%Y").date()
-                    vote_url = vote_url[0]
+                        chamber = actor_map[chamber]
+                        vote = dict(
+                            chamber=chamber, date=date, action=action, vote_url=vote_url
+                        )
 
-                    chamber = actor_map[chamber]
-                    vote = dict(
-                        chamber=chamber, date=date, action=action, vote_url=vote_url
-                    )
-
-                    # Update the vote object with voters..
-                    vote = self._parse_votes(vote_url, vote, bill)
-                    if vote:
-                        yield vote
+                        # Update the vote object with voters..
+                        vote = self._parse_votes(vote_url, vote, bill)
+                        if vote:
+                            yield vote
 
     def _parse_votes(self, url, vote, bill):
         """Given a vote url and a vote object, extract the voters and
