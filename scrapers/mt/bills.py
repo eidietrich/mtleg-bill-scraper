@@ -154,8 +154,8 @@ class MTBillScraper(Scraper, LXMLMixin):
         for f in leftover_cached_votes:
             try:
                 leftover_vote_json = json.loads(open(f).read())
-                leftover_votes.append(leftover_vote_json[pupa_id])
-                leftover_votes.append(leftover_vote_json[bill_identifier])
+                leftover_votes.append(leftover_vote_json['pupa_id'])
+                leftover_votes.append(leftover_vote_json['bill_identifier'])
                 os.remove(f)
                 delete_counter += 1
             except OSError as e:
@@ -566,7 +566,7 @@ class MTBillScraper(Scraper, LXMLMixin):
                         try: 
                             shutil.move(cached_vote, './_data/mt/')
                         except OSError as e:
-                            if "already exists" in e:
+                            if "already exists" in str(e):
                                 self.logger.warning("Vote event URL already seen attached to previous action, skipping")
                             else:
                                 raise e
