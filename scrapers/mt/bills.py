@@ -568,9 +568,10 @@ class MTBillScraper(Scraper, LXMLMixin):
                         except OSError as e:
                             if "already exists" in str(e):
                                 self.logger.warning("Vote event URL already seen attached to previous action, skipping")
+                                continue
                             else:
                                 raise e
-
+    
                         self.logger.info("Moved vote event from cache " + cached_vote)
                     else:
                         # Get the matching vote object.
