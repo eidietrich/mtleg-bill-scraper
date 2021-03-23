@@ -150,13 +150,20 @@ class MTBillScraper(Scraper, LXMLMixin):
         leftover_cached_votes = glob.glob('./_cached_votes/*')
 
         delete_counter = 0
+        leftover_votes = []
         for f in leftover_cached_votes:
             try:
+                leftover_vote_json = json.loads(open(f).read())
+                leftover_votes.append(leftover_vote_json['pupa_id'])
+                leftover_votes.append(leftover_vote_json['bill_identifier'])
                 os.remove(f)
                 delete_counter += 1
             except OSError as e:
                 print("Error deleting leftover cached votes: %s : %s" % (f, e.strerror))
-        self.logger.info("Deleted " + str(delete_counter) + " leftover cached vote events")
+        if delete_counter > 0:
+            self.logger.info("Deleted " + str(delete_counter) + " leftover cached vote events")
+            self.logger.info("This is likely the result of this/these vote event URL(s) being incorrectly duplicated in this/these bills:")
+            self.logger.info(leftover_votes)
 
         cached_votes_dir = './_cached_votes'
         try:
@@ -556,7 +563,15 @@ class MTBillScraper(Scraper, LXMLMixin):
                     if any(vote_url[0] in s for s in self.cached_vote_urls):
                         # Move cached vote event to /_data/mt
                         cached_vote = "./_cached_votes/vote_event_" + self.cached_vote_urls_to_ids[vote_url[0]] + ".json"
-                        shutil.move(cached_vote, './_data/mt/')
+                        try: 
+                            shutil.move(cached_vote, './_data/mt/')
+                        except OSError as e:
+                            if "already exists" in str(e):
+                                self.logger.warning("Vote event URL already seen attached to previous action, skipping")
+                                continue
+                            else:
+                                raise e
+    
                         self.logger.info("Moved vote event from cache " + cached_vote)
                     else:
                         # Get the matching vote object.
