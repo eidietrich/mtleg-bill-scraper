@@ -553,7 +553,7 @@ class MTBillScraper(Scraper, LXMLMixin):
         base_url += "/"
         status_page.make_links_absolute(base_url)
 
-        for tr in status_page.xpath("//table")[3].xpath("tr")[2:]:
+        for tr in status_page.xpath("//table")[3].xpath("tr")[1:]:
             tds = list(tr)
 
             if tds:
