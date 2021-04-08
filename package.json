@@ -4,7 +4,7 @@
   "description": "Adapted from https://github.com/openstates/openstates-scrapers.",
   "main": "index.js",
   "scripts": {
-    "populate-vote-cache": "mkdir -p _cached_votes && find _data/mt/vote_event_* -print0 | xargs -0 -I voteeventjson mv \"voteeventjson\" _cached_votes",
+    "populate-vote-cache": "mkdir -p _cached_votes && python3 make-vote-cache.py",
     "scrape": "npm run populate-vote-cache && docker-compose run --rm scrape mt bills --scrape",
     "scrape-no-cache": "docker-compose run --rm scrape mt bills --scrape",
     "test": "echo \"Error: no test specified\" && exit 1"
